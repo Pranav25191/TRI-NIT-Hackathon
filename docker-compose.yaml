@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db/:/data/db
+
+  backend:
+    build: ./backend
+    image: app-backend-compose
+    depends_on:
+      - mongodb
+    ports:
+      - 8000:8000
+    stdin_open: true
+    tty: true
+    restart: on-failure
+
+  data:
+    build: ./dataUploader
+    image: data-app-backend-compose
+    depends_on:
+      - mongodb
+    ports:
+      - 8001:8001
+    stdin_open: true
+    tty: true
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    image: frontend-compose
+    ports:
+      - 3000:3000
+    stdin_open: true
+
+volumes:
+  db-config:
+  db-data:
